@@ -1,0 +1,6 @@
+{
+  "name": "NeuralVoice Pro",
+  "description": "Premium Text-to-Speech (TTS) web application capable of converting text into ultra-realistic, natural, and expressive human-like speech.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
