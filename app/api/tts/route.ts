@@ -1,4 +1,4 @@
-import { GoogleGenAI, Modality } from '@google/genai';
+import { GoogleGenAI } from '@google/genai';
 import { NextRequest, NextResponse } from 'next/server';
 
 const ai = new GoogleGenAI({
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       model: 'gemini-3.1-flash-tts-preview',
       contents: [{ parts: [{ text: promptText }] }],
       config: {
-        responseModalities: [Modality.AUDIO],
+        responseModalities: ['AUDIO'],
         speechConfig: {
           voiceConfig: {
             prebuiltVoiceConfig: { voiceName: voice || 'Kore' },
@@ -49,14 +49,15 @@ export async function POST(req: NextRequest) {
     const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
 
     if (!base64Audio) {
-      return NextResponse.json({ error: 'Failed to generate audio' }, { status: 500 });
+      console.error('Model response did not contain inlineData. Full response:', JSON.stringify(response, null, 2));
+      return NextResponse.json({ error: 'Model output invalid or missing audio data' }, { status: 500 });
     }
 
     return NextResponse.json({ audio: base64Audio });
   } catch (error: any) {
-    console.error('TTS Generation Error:', error);
+    console.error('TTS Generation Error Detail:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to process TTS request' },
+      { error: error?.message || 'Failed to process TTS request' },
       { status: 500 }
     );
   }

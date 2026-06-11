@@ -34,7 +34,7 @@ export default function NeuralVoiceApp() {
     setText(e.target.value.slice(0, 10000));
   };
 
-  const splitTextIntoChunks = (text: string, maxLength: number = 800): string[] => {
+  const splitTextIntoChunks = (text: string, maxLength: number = 200): string[] => {
     const sentences = text.match(/[^.!?]+[.!?]*\s*/g) || [text];
     const chunks: string[] = [];
     let currentChunk = '';
@@ -93,7 +93,8 @@ export default function NeuralVoiceApp() {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to generate audio for chunk');
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || 'Failed to generate audio for chunk');
         }
 
         const data = await response.json();
@@ -106,9 +107,9 @@ export default function NeuralVoiceApp() {
       const url = URL.createObjectURL(wavBlob);
       setAudioUrl(url);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating audio:', error);
-      alert('Terdapat kesalahan saat menghasilkan audio. Silakan coba lagi.');
+      alert(`Terdapat kesalahan saat menghasilkan audio: ${error.message}`);
     } finally {
       setIsGenerating(false);
       setProgress(0);
